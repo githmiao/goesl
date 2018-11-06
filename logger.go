@@ -9,7 +9,7 @@ package goesl
 import (
 	"os"
 
-	"github.com/op/go-logging"
+	logging "github.com/githmiao/go-logging"
 )
 
 var (
@@ -19,7 +19,7 @@ var (
 	// which is dependent on the log level. Many fields have a custom output
 	// formatting too, eg. the time returns the hour down to the milli second.
 	format = logging.MustStringFormatter(
-		"%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.8s}%{color:reset} %{message}",
+		"%{shortfunc}->%{level:.8s} %{message}",
 	)
 )
 
@@ -44,7 +44,14 @@ func Warning(message string, args ...interface{}) {
 }
 
 func init() {
-	backend := logging.NewLogBackend(os.Stderr, "", 0)
-	formatter := logging.NewBackendFormatter(backend, format)
-	logging.SetBackend(formatter)
+	backend, err := logging.NewSyslogBackend("goesl")
+	if err != nil {
+		// If failed to conntect syslog, fall back to Stderr
+		backend2 := logging.NewLogBackend(os.Stderr, "", 0)
+		formatter := logging.NewBackendFormatter(backend2, format)
+		logging.SetBackend(formatter)
+	} else {
+		formatter := logging.NewBackendFormatter(backend, format)
+		logging.SetBackend(formatter)
+	}
 }
