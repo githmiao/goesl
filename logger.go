@@ -44,14 +44,7 @@ func Warning(message string, args ...interface{}) {
 }
 
 func init() {
-	backend, err := logging.NewSyslogBackend("goesl")
-	if err != nil {
-		// If failed to conntect syslog, fall back to Stderr
-		backend2 := logging.NewLogBackend(os.Stderr, "", 0)
-		formatter := logging.NewBackendFormatter(backend2, format)
-		logging.SetBackend(formatter)
-	} else {
-		formatter := logging.NewBackendFormatter(backend, format)
-		logging.SetBackend(formatter)
-	}
+	backend := logging.NewLogBackend(os.Stderr, "", 0)
+	formatter := logging.NewBackendFormatter(backend, format)
+	logging.SetBackend(formatter)
 }
