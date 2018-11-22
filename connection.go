@@ -200,8 +200,9 @@ func (c *SocketConnection) Handle() {
 	done := make(chan bool)
 
 	go func() {
+		br := bufio.NewReader(c)
 		for {
-			msg, err := newMessage(bufio.NewReaderSize(c, ReadBufferSize), true)
+			msg, err := newMessage(br, true)
 
 			if err != nil {
 				c.err <- err
